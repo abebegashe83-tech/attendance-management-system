@@ -28,6 +28,7 @@ test_output.txt
 
 # Django
 db.sqlite3
+staticfiles/
 
 # Environment variables
 .env
