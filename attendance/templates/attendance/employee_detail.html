@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Employee Detail{% endblock %}
+
+{% block content %}
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h3 class="mb-1">{{ employee.first_name }} {{ employee.last_name }}</h3>
+                <p class="text-muted mb-0">{{ employee.employee_id }}</p>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="{% url 'employee_edit' employee.pk %}" class="btn btn-primary">Edit</a>
+                <form method="post" action="{% url 'employee_deactivate' employee.pk %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-secondary">Deactivate</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-md-6"><strong>Department:</strong> {{ employee.department|default:'--' }}</div>
+            <div class="col-md-6"><strong>Position:</strong> {{ employee.position|default:'--' }}</div>
+            <div class="col-md-6"><strong>Shift:</strong> {{ employee.shift|default:'--' }}</div>
+            <div class="col-md-6"><strong>Status:</strong> {{ employee.employment_status }}</div>
+            <div class="col-md-6"><strong>Email:</strong> {{ employee.email|default:'--' }}</div>
+            <div class="col-md-6"><strong>Phone:</strong> {{ employee.phone|default:'--' }}</div>
+            <div class="col-md-6"><strong>Biometric ID:</strong> {{ employee.biometric_id|default:'--' }}</div>
+            <div class="col-md-6"><strong>Biometric Device:</strong> {{ employee.biometric_device|default:'--' }}</div>
+            <div class="col-md-6"><strong>Device Type:</strong> {{ employee.biometric_device_type|default:'--' }}</div>
+            <div class="col-md-6"><strong>Mobile Device ID:</strong> {{ employee.mobile_device_id|default:'--' }}</div>
+            <div class="col-md-6"><strong>Biometric Status:</strong> {{ employee.biometric_status|default:'--' }}</div>
+            <div class="col-md-12"><strong>Biometric Notes:</strong> {{ employee.biometric_notes|default:'--' }}</div>
+            <div class="col-md-12"><strong>Address:</strong> {{ employee.address|default:'--' }}</div>
+        </div>
+    </div>
+</div>
+{% endblock %}

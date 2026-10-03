@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block title %}Payroll Summary{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">Payroll Summary</h2>
+        <p class="text-muted mb-0">Monthly attendance-based payroll overview.</p>
+    </div>
+</div>
+
+<form method="get" class="row g-3 mb-4">
+    <div class="col-md-6">
+        <label class="form-label">Month</label>
+        <input type="month" name="month" class="form-control" value="{{ selected_month }}">
+    </div>
+    <div class="col-md-2 d-flex align-items-end">
+        <button type="submit" class="btn btn-outline-dark w-100">Apply</button>
+    </div>
+</form>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="text-muted small">Employees</div>
+                <h3 class="mb-0 mt-2">{{ summary.employees|default:0 }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="text-muted small">Present Days</div>
+                <h3 class="mb-0 mt-2">{{ summary.present_days|default:0 }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="text-muted small">Leave Days</div>
+                <h3 class="mb-0 mt-2">{{ summary.leave_days|default:0 }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="text-muted small">Overtime Hours</div>
+                <h3 class="mb-0 mt-2">{{ summary.overtime_hours|default:0 }}</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Employee</th>
+                    <th>Department</th>
+                    <th>Present Days</th>
+                    <th>Leave Days</th>
+                    <th>Absent Days</th>
+                    <th>Total Hours</th>
+                    <th>Overtime Hours</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in payroll_rows %}
+                <tr>
+                    <td>{{ row.employee }}</td>
+                    <td>{{ row.department }}</td>
+                    <td>{{ row.present_days }}</td>
+                    <td>{{ row.leave_days }}</td>
+                    <td>{{ row.absent_days }}</td>
+                    <td>{{ row.work_hours }}</td>
+                    <td>{{ row.overtime_hours }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center text-muted py-4">No payroll records found for this month.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

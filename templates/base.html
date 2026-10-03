@@ -1,0 +1,311 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Rodas Paints Industry Attendance{% endblock %}</title>
+    <link rel="icon" type="image/webp" href="{% static 'attendance/rodas-paints-logo.webp' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root {
+            --bs-primary: #2457c5;
+            --bs-primary-rgb: 36, 87, 197;
+            --bs-body-font-family: "Segoe UI", Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            --bs-body-color: #1d2939;
+            --bs-body-bg: #f4f7fb;
+            --app-border: #e6ebf3;
+            --app-muted: #667085;
+            --app-navy: #14243a;
+            --app-card: rgba(255, 255, 255, 0.86);
+            --app-sidebar-bg: #f8faff;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background:
+                radial-gradient(circle at top left, rgba(36, 87, 197, 0.08), transparent 30%),
+                linear-gradient(180deg, #f8fafe 0%, #f2f6fc 100%);
+            color: var(--bs-body-color);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 1020;
+            padding: .7rem 1rem;
+            background: rgba(255, 255, 255, .8) !important;
+            border-color: var(--app-border) !important;
+            box-shadow: 0 10px 30px rgba(16, 24, 40, .04);
+            backdrop-filter: blur(16px);
+        }
+
+        .navbar .container-fluid {
+            max-width: 1450px;
+            margin: 0 auto;
+        }
+
+        .navbar-brand {
+            padding: .3rem .4rem;
+            color: var(--app-navy) !important;
+            letter-spacing: -.025em;
+        }
+
+        .brand-logo {
+            width: 66px;
+            height: 40px;
+            object-fit: contain;
+            padding: .3rem;
+            background: rgba(36, 87, 197, .06);
+            border-radius: .7rem;
+        }
+
+        .navbar-nav {
+            gap: .2rem;
+            align-items: center;
+        }
+
+        .navbar-nav .nav-link {
+            padding: .62rem .8rem !important;
+            border-radius: .7rem;
+            color: #475467;
+            font-size: .88rem;
+            font-weight: 600;
+            transition: all .18s ease;
+        }
+
+        .navbar-nav .nav-link:hover,
+        .navbar-nav .nav-link:focus,
+        .navbar-nav .nav-link.active {
+            color: var(--bs-primary);
+            background: linear-gradient(180deg, rgba(36, 87, 197, 0.08), rgba(36, 87, 197, 0.04));
+        }
+
+        .navbar .btn-outline-dark {
+            border-radius: .65rem;
+            font-weight: 600;
+            padding: .52rem .9rem;
+        }
+
+        main.container {
+            flex: 1;
+            width: min(100% - 2rem, 1440px);
+            max-width: 1440px;
+            padding-top: 2rem !important;
+            padding-bottom: 2.5rem !important;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--app-navy);
+            letter-spacing: -.03em;
+        }
+
+        .text-muted {
+            color: var(--app-muted) !important;
+        }
+
+        .card {
+            overflow: hidden;
+            border: 1px solid var(--app-border) !important;
+            border-radius: 1rem;
+            background: var(--app-card);
+            box-shadow: 0 10px 24px rgba(16, 24, 40, .04) !important;
+            transition: box-shadow .18s ease, transform .18s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 16px 26px rgba(16, 24, 40, .06) !important;
+        }
+
+        .card-header {
+            border-bottom: 1px solid #edf1f7;
+            color: var(--app-navy);
+            background: rgba(255, 255, 255, .7);
+        }
+
+        .card-body {
+            padding: 1.3rem;
+        }
+
+        .table {
+            --bs-table-color: #344054;
+            --bs-table-hover-bg: #f6f8fc;
+            margin-bottom: 0;
+        }
+
+        .table > :not(caption) > * > * {
+            padding: .9rem 1rem;
+            border-bottom-color: #edf0f5;
+        }
+
+        .table thead th {
+            color: #667085;
+            font-size: .74rem;
+            font-weight: 700;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .form-label {
+            color: #344054;
+            font-size: .9rem;
+            font-weight: 600;
+        }
+
+        .form-control,
+        .form-select {
+            min-height: 2.8rem;
+            border-color: #d7deeb;
+            border-radius: .7rem;
+            color: #1d2939;
+            background: #fff;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #8aa9ef;
+            box-shadow: 0 0 0 .22rem rgba(36, 87, 197, .12);
+        }
+
+        .btn {
+            border-radius: .7rem;
+            font-weight: 600;
+            letter-spacing: .01em;
+            transition: transform .15s ease, box-shadow .15s ease, background-color .15s ease;
+        }
+
+        .btn-primary {
+            --bs-btn-bg: #2457c5;
+            --bs-btn-border-color: #2457c5;
+            --bs-btn-hover-bg: #1d4db1;
+            --bs-btn-hover-border-color: #1d4db1;
+            --bs-btn-active-bg: #173f8f;
+            --bs-btn-active-border-color: #173f8f;
+            box-shadow: 0 10px 18px rgba(36, 87, 197, .2);
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .badge {
+            padding: .42em .7em;
+            border-radius: 999px;
+            font-weight: 600;
+            letter-spacing: .02em;
+        }
+
+        .alert {
+            border: 0;
+            border-radius: .8rem;
+            box-shadow: 0 4px 14px rgba(16, 24, 40, .05);
+        }
+
+        footer {
+            color: var(--app-muted);
+            border-color: var(--app-border) !important;
+            background: rgba(255, 255, 255, .8) !important;
+        }
+
+        @media (max-width: 1399.98px) {
+            .navbar-collapse {
+                padding-top: .7rem;
+            }
+
+            .navbar-nav {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 575.98px) {
+            main.container {
+                width: min(100% - 1.25rem, 1440px);
+                padding-top: 1.25rem !important;
+            }
+
+            .card-body {
+                padding: 1rem;
+            }
+
+            .table > :not(caption) > * > * {
+                padding: .72rem .75rem;
+            }
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-expand-xxl navbar-light bg-white border-bottom">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'dashboard' %}">
+                <img class="brand-logo" src="{% static 'attendance/rodas-paints-logo.webp' %}" alt="Rodas Paints Industry logo">
+                <span class="fw-semibold">Attendance</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavigation" aria-controls="mainNavigation" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="mainNavigation">
+            {% if user.is_authenticated %}
+            <div class="navbar-nav me-auto">
+                <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
+                <a class="nav-link" href="{% url 'employee_list' %}">Employees</a>
+                <a class="nav-link" href="{% url 'department_list' %}">Departments</a>
+                <a class="nav-link" href="{% url 'shift_list' %}">Shifts</a>
+                <a class="nav-link" href="{% url 'attendance_today' %}">Attendance</a>
+                <a class="nav-link" href="{% url 'reports' %}">Reports</a>
+                <a class="nav-link" href="{% url 'leave_list' %}">Leaves</a>
+                <a class="nav-link" href="{% url 'holiday_list' %}">Holidays</a>
+                <a class="nav-link" href="{% url 'overtime_list' %}">Overtime</a>
+                <a class="nav-link" href="{% url 'payroll_summary' %}">Payroll</a>
+                <a class="nav-link" href="{% url 'user_management' %}">Users</a>
+                <a class="nav-link" href="{% url 'audit_log_list' %}">Audit Logs</a>
+            </div>
+            {% endif %}
+            <div class="ms-auto d-flex align-items-center gap-3">
+                {% if user.is_authenticated %}
+                    <span class="text-dark">{{ user.get_full_name|default:user.username }}</span>
+                    <a class="btn btn-outline-dark btn-sm" href="{% url 'logout' %}">Logout</a>
+                {% else %}
+                    <a class="btn btn-outline-dark btn-sm" href="{% url 'login' %}">Login</a>
+                    <a class="btn btn-primary btn-sm" href="{% url 'register' %}">Request access</a>
+                {% endif %}
+            </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container py-4">
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert
+            {% if 'success' in message.tags %}alert-success
+            {% elif 'error' in message.tags %}alert-danger
+            {% elif 'warning' in message.tags %}alert-warning
+            {% elif 'info' in message.tags %}alert-info
+            {% else %}alert-secondary{% endif %}
+            fade show" role="alert">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="border-top bg-white py-3">
+        <div class="container d-flex flex-column flex-sm-row justify-content-between gap-1">
+            <small>Super Double "T" General Trading PLC</small>
+            <small>We Trust In God!!!</small>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

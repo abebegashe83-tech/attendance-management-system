@@ -1,0 +1,41 @@
+# Python virtual environment
+venv/
+.venv/
+
+# Bundled Python runtime
+DLLs/
+Doc/
+include/
+Lib/
+libs/
+tcl/
+Tools/
+python.exe
+pythonw.exe
+python3.dll
+python311.dll
+vcruntime140.dll
+vcruntime140_1.dll
+LICENSE.txt
+NEWS.txt
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Generated output
+test_output.txt
+
+# Django
+db.sqlite3
+
+# Environment variables
+.env
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# OS files
+.DS_Store
+Thumbs.db

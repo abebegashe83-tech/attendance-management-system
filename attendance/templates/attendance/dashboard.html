@@ -1,0 +1,301 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard | Rodas Paints Industry Attendance{% endblock %}
+
+{% block content %}
+<div class="dashboard-heading d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3 mb-4">
+    <div>
+        <div class="d-flex align-items-center gap-2 mb-2">
+            <span class="dashboard-live-dot" aria-hidden="true"></span>
+            <p class="text-uppercase small fw-bold text-primary mb-0">Workforce overview</p>
+            <span class="dashboard-live-label">Live</span>
+        </div>
+        <h1 class="display-6 fw-bold mb-1">Good day, {{ user.first_name|default:user.username }}</h1>
+        <p class="text-muted mb-0">Here is your attendance and operations summary for {{ today|date:'l, F j, Y' }}.</p>
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+        <a class="btn btn-primary" href="{% url 'attendance_today' %}"><i class="bi bi-fingerprint me-2" aria-hidden="true"></i>Attendance</a>
+        <a class="btn btn-light border" href="{% url 'employee_create' %}"><i class="bi bi-person-plus me-2" aria-hidden="true"></i>Add employee</a>
+        <a class="btn btn-light border" href="{% url 'reports' %}"><i class="bi bi-file-earmark-bar-graph me-2" aria-hidden="true"></i>Reports</a>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-6 col-xl-3">
+        <div class="card metric-card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="metric-label">Active employees</span>
+                    <span class="metric-icon metric-icon-blue"><i class="bi bi-people" aria-hidden="true"></i></span>
+                </div>
+                <div class="metric-value">{{ total_employees }}</div>
+                <div class="metric-note">Active workforce</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-xl-3">
+        <div class="card metric-card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="metric-label">Checked in</span>
+                    <span class="metric-icon metric-icon-green"><i class="bi bi-person-check" aria-hidden="true"></i></span>
+                </div>
+                <div class="metric-value">{{ checked_in_count }}</div>
+                <div class="metric-note">Attendance recorded today</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-xl-3">
+        <div class="card metric-card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="metric-label">Late arrivals</span>
+                    <span class="metric-icon metric-icon-amber"><i class="bi bi-clock-history" aria-hidden="true"></i></span>
+                </div>
+                <div class="metric-value">{{ late_count }}</div>
+                <div class="metric-note">Arrivals needing attention</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-xl-3">
+        <div class="card metric-card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="metric-label">Pending leave</span>
+                    <span class="metric-icon metric-icon-purple"><i class="bi bi-calendar2-check" aria-hidden="true"></i></span>
+                </div>
+                <div class="metric-value">{{ pending_leave_count }}</div>
+                <div class="metric-note">Requests awaiting review</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-xl-7">
+        <section class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+                <h2 class="h6 mb-0">Today's attendance</h2>
+                <span class="badge text-bg-light">{{ attendance_rate }}% attendance rate</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="attendance-progress-wrap">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="small fw-semibold text-secondary">Today's workforce attendance</span>
+                        <span class="small fw-bold text-primary">{{ attendance_rate }}%</span>
+                    </div>
+                    <div class="progress" role="progressbar" aria-label="Today's workforce attendance" aria-valuenow="{{ attendance_rate }}" aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress-bar" style="width: {{ attendance_rate }}%"></div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr><th scope="col">Employee</th><th scope="col">Department</th><th scope="col">Check-in</th><th scope="col">Status</th></tr>
+                        </thead>
+                        <tbody>
+                            {% for record in recent_attendance %}
+                            <tr>
+                                <td class="fw-medium">{{ record.employee }}</td>
+                                <td>{{ record.employee.department.name|default:'-' }}</td>
+                                <td>{{ record.check_in|time:'H:i' }}</td>
+                                <td><span class="badge {% if record.status == 'Late' %}text-bg-warning{% else %}text-bg-success{% endif %}">{{ record.status }}</span></td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="4" class="text-center text-muted py-5">No attendance recorded today.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div class="col-xl-5">
+        <section class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+                <h2 class="h6 mb-0">Leave approvals</h2>
+                <a class="small text-decoration-none" href="{% url 'leave_list' %}">View requests</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr><th scope="col">Employee</th><th scope="col">Type</th><th scope="col">Dates</th></tr>
+                        </thead>
+                        <tbody>
+                            {% for leave in recent_leaves %}
+                            <tr>
+                                <td class="fw-medium">{{ leave.employee }}</td>
+                                <td>{{ leave.leave_type }}</td>
+                                <td>{{ leave.start_date|date:'M j' }} - {{ leave.end_date|date:'M j' }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="3" class="text-center text-muted py-5">No leave requests need approval.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div class="col-xl-7">
+        <section class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white py-3"><h2 class="h6 mb-0">Department attendance</h2></div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr><th scope="col">Department</th><th scope="col">Checked in</th><th scope="col">Late</th><th scope="col">Not checked in</th></tr>
+                        </thead>
+                        <tbody>
+                            {% for department in department_summary %}
+                            <tr>
+                                <td class="fw-medium">{{ department.name }}</td>
+                                <td>{{ department.checked_in }}</td>
+                                <td>{{ department.late|default:0 }}</td>
+                                <td>{{ department.absent }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="4" class="text-center text-muted py-5">No department data available.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div class="col-xl-5">
+        <section class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white py-3"><h2 class="h6 mb-0">Attendance exceptions</h2></div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <h3 class="exception-heading"><i class="bi bi-clock text-warning me-2" aria-hidden="true"></i>Late arrivals</h3>
+                        {% for item in late_employees %}
+                            <div class="exception-item">{{ item.employee }}</div>
+                        {% empty %}
+                            <p class="text-muted small mb-0">No late arrivals today.</p>
+                        {% endfor %}
+                    </div>
+                    <div class="col-sm-6">
+                        <h3 class="exception-heading"><i class="bi bi-person-dash text-danger me-2" aria-hidden="true"></i>Not checked in</h3>
+                        {% for employee in absent_employees %}
+                            <div class="exception-item">{{ employee.first_name }} {{ employee.last_name }}</div>
+                        {% empty %}
+                            <p class="text-muted small mb-0">Everyone is accounted for.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<style>
+    .dashboard-live-dot {
+        width: .55rem;
+        height: .55rem;
+        border-radius: 50%;
+        background: #16a36a;
+        box-shadow: 0 0 0 .25rem rgba(22, 163, 106, .12);
+    }
+
+    .dashboard-live-label {
+        padding: .2rem .5rem;
+        border-radius: 999px;
+        background: #eaf8f1;
+        color: #138151;
+        font-size: .68rem;
+        font-weight: 700;
+        letter-spacing: .04em;
+        text-transform: uppercase;
+    }
+
+    .metric-card {
+        border-radius: 1rem;
+        background: #fff;
+    }
+
+    .metric-card .card-body {
+        padding: 1.2rem 1.25rem;
+    }
+
+    .metric-label {
+        color: #667085;
+        font-size: .85rem;
+        font-weight: 600;
+    }
+
+    .metric-icon {
+        display: grid;
+        place-items: center;
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: .8rem;
+        font-size: 1.15rem;
+    }
+
+    .metric-icon-blue { color: #2457c5; background: #edf3ff; }
+    .metric-icon-green { color: #16845a; background: #e9f8f1; }
+    .metric-icon-amber { color: #b56a08; background: #fff5e5; }
+    .metric-icon-purple { color: #7551b8; background: #f2edff; }
+
+    .metric-value {
+        margin-top: .8rem;
+        color: #14243a;
+        font-size: 2rem;
+        font-weight: 700;
+        line-height: 1;
+        letter-spacing: -.04em;
+    }
+
+    .metric-note {
+        margin-top: .55rem;
+        color: #98a2b3;
+        font-size: .76rem;
+    }
+
+    .attendance-progress-wrap {
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid #edf0f5;
+        background: #fcfdff;
+    }
+
+    .attendance-progress-wrap .progress {
+        height: .48rem;
+        border-radius: 999px;
+        background: #e9eef7;
+    }
+
+    .attendance-progress-wrap .progress-bar {
+        border-radius: 999px;
+        background: linear-gradient(90deg, #2457c5, #4b83f0);
+    }
+
+    .exception-heading {
+        margin-bottom: .85rem;
+        color: #344054;
+        font-size: .82rem;
+        font-weight: 700;
+    }
+
+    .exception-item {
+        padding: .55rem .7rem;
+        margin-bottom: .45rem;
+        border: 1px solid #edf0f5;
+        border-radius: .65rem;
+        background: #fcfdff;
+        color: #344054;
+        font-size: .88rem;
+    }
+
+    @media (max-width: 575.98px) {
+        .dashboard-heading h1 {
+            font-size: 1.8rem;
+        }
+    }
+</style>
+{% endblock %}

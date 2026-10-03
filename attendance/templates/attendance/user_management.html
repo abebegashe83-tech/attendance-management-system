@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block title %}User Management | Attendance Management System{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div>
+        <h1 class="h3 mb-1">User Management</h1>
+        <p class="text-muted mb-0">Assign system roles and access groups to users.</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h2 class="h5 mb-1">Pending account approvals</h2>
+                        <p class="text-muted small mb-0">Approve access requests before users can sign in.</p>
+                    </div>
+                    <span class="badge text-bg-warning">{{ pending_users|length }} pending</span>
+                </div>
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr><th scope="col">Name</th><th scope="col">Username</th><th scope="col">Email</th><th scope="col">Requested</th><th scope="col">Action</th></tr>
+                        </thead>
+                        <tbody>
+                            {% for pending_user in pending_users %}
+                            <tr>
+                                <td>{{ pending_user.get_full_name|default:'-' }}</td>
+                                <td>{{ pending_user.username }}</td>
+                                <td>{{ pending_user.email }}</td>
+                                <td>{{ pending_user.date_joined|date:'M j, Y' }}</td>
+                                <td>
+                                    <form method="post" action="{% url 'approve_user' pending_user.pk %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-primary">Approve</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="5" class="text-center text-muted py-4">No accounts are waiting for approval.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-5">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="h5 mb-3">Users</h2>
+                <div class="list-group">
+                    {% for user in users %}
+                    <a href="?user_id={{ user.pk }}" class="list-group-item list-group-item-action {% if selected_user and selected_user.pk == user.pk %}active{% endif %}">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span>{{ user.get_full_name|default:user.username }}</span>
+                            <small>{{ user.username }}</small>
+                        </div>
+                    </a>
+                    {% empty %}
+                    <div class="text-muted">No users found.</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-7">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                {% if selected_user %}
+                <h2 class="h5 mb-3">Roles for {{ selected_user.get_full_name|default:selected_user.username }}</h2>
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="user_id" value="{{ selected_user.pk }}">
+
+                    <div class="row g-3">
+                        {% for group in available_groups %}
+                        <div class="col-md-6">
+                            <div class="form-check border rounded p-3">
+                                <input class="form-check-input" type="checkbox" name="groups" value="{{ group.pk }}" id="group-{{ group.pk }}"
+                                    {% if selected_user.groups.all %}{% for user_group in selected_user.groups.all %}{% if user_group.pk == group.pk %}checked{% endif %}{% endfor %}{% endif %}>
+                                <label class="form-check-label" for="group-{{ group.pk }}">{{ group.name }}</label>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="d-flex justify-content-end mt-4">
+                        <button type="submit" class="btn btn-primary">Save Roles</button>
+                    </div>
+                </form>
+                {% else %}
+                <div class="alert alert-info mb-0">Select a user to manage their roles.</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

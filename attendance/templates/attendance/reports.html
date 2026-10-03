@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block title %}Reports{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">{{ report_title }}</h2>
+        <p class="text-muted mb-0">Export and review attendance performance.</p>
+    </div>
+    <a href="{% url 'reports_export_csv' %}?report_type={{ report_type }}&date={{ selected_date }}" class="btn btn-primary">Export CSV</a>
+</div>
+
+<form method="get" class="row g-3 mb-4">
+    <div class="col-md-4">
+        <label class="form-label">Report Type</label>
+        <select name="report_type" class="form-select">
+            <option value="daily" {% if report_type == 'daily' %}selected{% endif %}>Daily</option>
+            <option value="monthly" {% if report_type == 'monthly' %}selected{% endif %}>Monthly</option>
+            <option value="employee" {% if report_type == 'employee' %}selected{% endif %}>Employee</option>
+            <option value="department" {% if report_type == 'department' %}selected{% endif %}>Department</option>
+        </select>
+    </div>
+    <div class="col-md-4">
+        <label class="form-label">Date</label>
+        <input type="date" name="date" class="form-control" value="{{ selected_date }}">
+    </div>
+    <div class="col-md-4 d-flex align-items-end">
+        <button type="submit" class="btn btn-outline-dark w-100">Apply Filters</button>
+    </div>
+</form>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="text-muted small">Total</div>
+                <h3 class="mb-0 mt-2">{{ summary.total|default:0 }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="text-muted small">Present</div>
+                <h3 class="mb-0 mt-2">{{ summary.present|default:0 }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="text-muted small">Late</div>
+                <h3 class="mb-0 mt-2">{{ summary.late|default:0 }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="text-muted small">Absent</div>
+                <h3 class="mb-0 mt-2">{{ summary.absent|default:0 }}</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Employee</th>
+                    <th>Department</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Check In</th>
+                    <th>Check Out</th>
+                    <th>Hours</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in report_rows %}
+                <tr>
+                    <td>{{ row.employee }}</td>
+                    <td>{{ row.employee.department|default:'--' }}</td>
+                    <td>{{ row.date }}</td>
+                    <td>{{ row.status }}</td>
+                    <td>{{ row.check_in|time:'H:i'|default:'--' }}</td>
+                    <td>{{ row.check_out|time:'H:i'|default:'--' }}</td>
+                    <td>{{ row.total_work_hours }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center text-muted py-4">No records found for the selected filter.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

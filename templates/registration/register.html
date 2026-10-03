@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Request access | Rodas Paints Industry Attendance{% endblock %}
+
+{% block content %}
+<div class="auth-shell">
+    <div class="auth-panel">
+        <div class="auth-hero">
+            <div class="brand-lockup">
+                <img src="{% static 'attendance/rodas-paints-logo.webp' %}" alt="Rodas Paints Industry logo" class="brand-mark">
+                <div>
+                    <span class="eyebrow">Operations portal</span>
+                    <h1>Join the team</h1>
+                </div>
+            </div>
+            <p class="hero-copy">Request an account for the Rodas Paints Industry attendance portal.</p>
+            <ul class="hero-points">
+                <li>Secure workforce access</li>
+                <li>Attendance and team information</li>
+                <li>Administrator approval required</li>
+            </ul>
+        </div>
+
+        <div class="auth-form-wrap">
+            <div class="form-header">
+                <span class="badge-soft">Request access</span>
+                <h2>Create your account</h2>
+                <p>Your account will be reviewed before you can sign in.</p>
+            </div>
+
+            <form method="post" class="auth-form">
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="mb-3">
+                        <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}<div class="form-text">{{ field.help_text|safe }}</div>{% endif %}
+                        {% for error in field.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+                    </div>
+                {% endfor %}
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+                {% endif %}
+                <button type="submit" class="btn btn-primary w-100">Submit access request</button>
+            </form>
+            <p class="text-center text-muted mt-4 mb-0">
+                Already have an account? <a href="{% url 'login' %}" class="fw-semibold text-decoration-none">Sign in</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<style>
+    .auth-shell {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: calc(100vh - 150px);
+        padding: 2rem 1rem;
+    }
+
+    .auth-panel {
+        width: min(100%, 1100px);
+        display: grid;
+        grid-template-columns: 1.05fr 1fr;
+        background: rgba(255, 255, 255, .9);
+        border: 1px solid rgba(17, 24, 39, .06);
+        border-radius: 1.5rem;
+        overflow: hidden;
+        box-shadow: 0 28px 60px rgba(15, 23, 42, .12);
+    }
+
+    .auth-hero {
+        background: linear-gradient(135deg, #14243a, #1d4f9f 48%, #2457c5);
+        color: #fff;
+        padding: 2.5rem 2rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .brand-lockup { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+    .brand-mark { width: 70px; height: 48px; object-fit: contain; background: rgba(255,255,255,.15); border-radius: 14px; padding: .45rem; }
+    .eyebrow { font-size: .72rem; text-transform: uppercase; letter-spacing: .12em; opacity: .8; display: inline-block; margin-bottom: .4rem; }
+    .auth-hero h1 { margin: 0; font-size: clamp(2rem, 3vw, 3rem); color: #fff; letter-spacing: -.04em; }
+    .hero-copy { font-size: 1.02rem; line-height: 1.75; color: rgba(255,255,255,.82); margin: 0 0 1.25rem; }
+    .hero-points { list-style: none; padding: 0; margin: 0; display: grid; gap: .7rem; }
+    .hero-points li { position: relative; padding-left: 1.7rem; color: rgba(255,255,255,.9); }
+    .hero-points li::before { content: "✓"; position: absolute; left: 0; color: #9fe5ff; font-weight: 700; }
+    .auth-form-wrap { background: rgba(255,255,255,.96); padding: 2.4rem 2rem; display: flex; flex-direction: column; justify-content: center; }
+    .form-header { margin-bottom: 1.5rem; }
+    .badge-soft { display: inline-block; padding: .45rem .75rem; border-radius: 999px; background: #edf3ff; color: #2457c5; font-size: .72rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; margin-bottom: .8rem; }
+    .form-header h2 { margin: 0 0 .3rem; font-size: clamp(1.8rem, 2vw, 2.3rem); letter-spacing: -.04em; }
+    .form-header p { margin: 0; color: var(--app-muted); }
+    .auth-form label { color: #344054; font-weight: 600; }
+    .auth-form ul { color: var(--app-muted); font-size: .8rem; padding-left: 1.2rem; margin-top: .3rem; }
+    @media (max-width: 860px) {
+        .auth-panel { grid-template-columns: 1fr; }
+        .auth-hero { padding: 2rem 1.5rem; }
+        .auth-form-wrap { padding: 1.6rem 1.2rem 1.9rem; }
+    }
+</style>
+{% endblock %}

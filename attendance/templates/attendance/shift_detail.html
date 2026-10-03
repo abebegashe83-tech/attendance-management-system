@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Shift Details{% endblock %}
+
+{% block content %}
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h3 class="mb-1">{{ shift.name }}</h3>
+                <p class="text-muted mb-0">{{ shift.start_time }} - {{ shift.end_time }}</p>
+            </div>
+            <a href="{% url 'shift_edit' shift.pk %}" class="btn btn-primary">Edit</a>
+        </div>
+        <div class="row g-3">
+            <div class="col-md-6"><strong>Grace Period:</strong> {{ shift.grace_period_minutes }} minutes</div>
+            <div class="col-md-6"><strong>Working Hours:</strong> {{ shift.working_hours }}</div>
+            <div class="col-md-6"><strong>Overnight:</strong> {{ shift.is_overnight|yesno:'Yes,No' }}</div>
+            <div class="col-md-6"><strong>Active:</strong> {{ shift.is_active|yesno:'Yes,No' }}</div>
+        </div>
+    </div>
+</div>
+{% endblock %}

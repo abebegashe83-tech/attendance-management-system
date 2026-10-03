@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}Overtime Requests | Attendance Management System{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div>
+        <h1 class="h3 mb-1">Overtime Requests</h1>
+        <p class="text-muted mb-0">Track overtime hours requested by employees.</p>
+    </div>
+    {% if employee %}
+    <a href="{% url 'overtime_request_create' %}" class="btn btn-primary">Request Overtime</a>
+    {% endif %}
+</div>
+
+<div class="table-responsive">
+    <table class="table table-hover align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>Employee</th>
+                <th>Date</th>
+                <th>Hours</th>
+                <th>Reason</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for request in page_obj %}
+            <tr>
+                <td>{{ request.employee }}</td>
+                <td>{{ request.date }}</td>
+                <td>{{ request.hours }}</td>
+                <td>{{ request.reason }}</td>
+                <td>
+                    {% if request.status == 'Approved' %}
+                    <span class="badge text-bg-success">Approved</span>
+                    {% elif request.status == 'Rejected' %}
+                    <span class="badge text-bg-danger">Rejected</span>
+                    {% else %}
+                    <span class="badge text-bg-warning text-dark">Pending</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if request.status == 'Pending' and can_review_requests %}
+                    <div class="d-flex gap-2">
+                        <form method="post" action="{% url 'overtime_approve' request.pk %}">{% csrf_token %}<button class="btn btn-sm btn-success" type="submit">Approve</button></form>
+                        <form method="post" action="{% url 'overtime_reject' request.pk %}">{% csrf_token %}<button class="btn btn-sm btn-danger" type="submit">Reject</button></form>
+                    </div>
+                    {% else %}
+                    <span class="text-muted">-</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6" class="text-center text-muted py-4">No overtime requests yet.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

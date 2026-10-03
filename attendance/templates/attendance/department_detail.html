@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}Department Details{% endblock %}
+
+{% block content %}
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h3 class="mb-1">{{ department.name }}</h3>
+                <p class="text-muted mb-0">{{ department.code }}</p>
+            </div>
+            <a href="{% url 'department_edit' department.pk %}" class="btn btn-primary">Edit</a>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-md-6"><strong>Manager:</strong> {{ department.manager|default:'--' }}</div>
+            <div class="col-md-6"><strong>Status:</strong> {{ department.is_active|yesno:'Active,Inactive' }}</div>
+            <div class="col-md-12"><strong>Description:</strong> {{ department.description|default:'--' }}</div>
+            <div class="col-md-12"><strong>Employee Count:</strong> {{ employee_count }}</div>
+        </div>
+    </div>
+</div>
+{% endblock %}
